@@ -10,9 +10,9 @@
         </ion-row>
       </ion-grid>
     </ion-card-header>
-    <ion-card-body>
+    <ion-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <ion-grid class="ion-margin">
+        <ion-grid>
           <ion-row class="ion-padding-bottom">
             <ion-label><b>Please Enter User ID</b></ion-label>
           </ion-row>
@@ -26,6 +26,6 @@
           </ion-row>
         </ion-grid>
       </form>
-    </ion-card-body>
+    </ion-card-content>
   </ion-card>
 </ion-content>
