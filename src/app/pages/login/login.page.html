@@ -1,0 +1,31 @@
+<ion-content color="primary">
+  <ion-card>
+    <ion-card-header>
+      <ion-grid>
+        <ion-row class="ion-justify-content-center">
+          <img src="../../../assets/icon/scm_logo.png" height="100" width="100">
+        </ion-row>
+        <ion-row class="ion-justify-content-center">
+          <ion-text><b>SCM POS System</b></ion-text>
+        </ion-row>
+      </ion-grid>
+    </ion-card-header>
+    <ion-card-body>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <ion-grid class="ion-margin">
+          <ion-row class="ion-padding-bottom">
+            <ion-label><b>Please Enter User ID</b></ion-label>
+          </ion-row>
+          <ion-row>
+            <ion-input class="ion-text-left" type="text" formControlName="userID">&nbsp;ID - </ion-input>
+          </ion-row>
+          <ion-row class="ion-justify-content-center">
+            <ion-col size="10">
+              <ion-button type="submit" expand="full" size="small" shape="round" class="ion-margin-top ion-text-capitalize login-btn">Login</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </form>
+    </ion-card-body>
+  </ion-card>
+</ion-content>
