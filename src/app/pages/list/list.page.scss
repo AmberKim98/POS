@@ -1,0 +1,50 @@
+ion-toolbar {
+    --background: #144172;
+}
+ion-title {
+    --color: #ffffff;
+}
+.itemlist-ttl {
+    font-size: 16px;
+    text-align: center;
+}
+.float-left {
+    float: left;
+}
+.float-right {
+    float: right;
+}
+ion-card {
+    border-radius: 8px;
+    --background: #ECF9FF;
+}
+ion-input {
+    border: 2px solid #92949c;
+    border-radius: 5px;
+}
+.label {
+    font-size: 18px;
+    font-weight: bold;
+    --color: #144172;
+}
+.scan-btn,
+.item-submit {
+    --background: #144172;
+}
+.total-txt {
+    color: #144172;
+}
+ion-menu ion-item:hover ion-icon,
+ion-menu ion-item:hover ion-label,
+ion-popover .options:hover ion-label,
+ion-modal ion-item:hover ion-label,
+ion-modal ion-item:hover .delete-icon,
+ion-modal ion-item:hover .edit-icon {
+    color: #144172;
+}
+ion-menu ion-item:hover,
+ion-popover .options:hover,
+.ellipsisModal ion-item:hover {
+    --background: #f2f2f2;
+    cursor: pointer;
+}

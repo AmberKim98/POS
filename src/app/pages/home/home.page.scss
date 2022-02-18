@@ -74,7 +74,8 @@ ion-input {
     border-radius: 5px;
 }
 .scan-btn,
-.item-submit {
+.item-submit,
+.next-btn {
     --background: #144172;
 }
 .total-txt {
@@ -93,4 +94,9 @@ ion-input {
 }
 .scan-btn {
     font-size: 12px;
+}
+.next-btn {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }

@@ -1,0 +1,26 @@
+ion-input {
+    border: 2px solid #92949c;
+    border-radius: 5px;
+}
+.scan-btn,
+.item-submit {
+    --background: #144172;
+    --color: #ffffff;
+}
+.float-right {
+    float: right;
+}
+.float-left {
+    float: left;
+}
+.scan-btn {
+    font-size: 12px;
+}
+.total-txt {
+    color: #144172;
+}
+.label {
+    font-size: 18px;
+    font-weight: bold;
+    --color: #144172;
+}

@@ -33,7 +33,6 @@ export class RegisterPage implements OnInit {
 
     this.platform.ready().then(() => {
       this.createDB();
-      this.createTable();
     })
     .catch(err => {
       console.log(err);
@@ -65,7 +64,7 @@ export class RegisterPage implements OnInit {
    */
    createTable() {
     console.log('creating table....');
-    this.db_obj.executeSql('CREATE TABLE users(uid INTEGER PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), gender VARCHAR(255), address VARCHAR(255))', [])
+    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS users(uid INTEGER PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), gender VARCHAR(255), address VARCHAR(255))', [])
     .then(() => console.log('table was created!'))
     .catch(err => console.log(err));
   }

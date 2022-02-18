@@ -19,6 +19,20 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
+  {
+    path: 'update',
+    loadChildren: () => import('./pages/update/update.module').then( m => m.UpdatePageModule)
+  },
+  {
+    path: 'list',
+    loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
+  },
+  {
+    path: 'edit-item',
+    loadChildren: () => import('./pages/edit-item/edit-item.module').then( m => m.EditItemPageModule)
+  },
+
+
 ];
 
 @NgModule({

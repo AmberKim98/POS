@@ -3,6 +3,7 @@ import { AlertController, LoadingController, ModalController, Platform } from '@
 import { BarcodeScanner } from '@awesome-cordova-plugins/barcode-scanner/ngx';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UpdatePage } from '../update/update.page';
 
 @Component({
   selector: 'app-home',
@@ -65,9 +66,24 @@ export class HomePage implements OnInit {
     })
     .then((db: SQLiteObject) => {
       this.db_obj = db;
-      this.createTable();
-      this.getItems();
+      this.createCartTable();
+      this.createItemTable();
+      this.getcartItems();
       console.log('Database was created.');
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
+  /**
+   * Create cartItems table.
+   * 
+   */
+  createCartTable() {
+    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS cartItems(id INTEGER PRIMARY KEY, barcode VARCHAR(255), name VARCHAR(255), quantity VARCHAR(255), price VARCHAR(255))', [])
+    .then(() => {
+      console.log('Cart Items table was created!');
     })
     .catch(err => {
       console.log(err);
@@ -78,8 +94,8 @@ export class HomePage implements OnInit {
    * Create items table.
    * 
    */
-  createTable() {
-    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS items(id INTEGER PRIMARY KEY, barcode VARCHAR(255), name VARCHAR(255), quantity VARCHAR(255), price VARCHAR(255))', [])
+   createItemTable() {
+    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS itemlist(id INTEGER PRIMARY KEY, barcode VARCHAR(255), name VARCHAR(255), price VARCHAR(255))', [])
     .then(() => {
       console.log('Items table was created!');
     })
@@ -103,10 +119,26 @@ export class HomePage implements OnInit {
   scan() {
     this.barcodeScanner.scan().then(barcodeData => {
       this.data.barcode = barcodeData["text"];
+      this.retrieve(this.data.barcode);
       console.log(barcodeData);
     })
     .catch(err => {
       console.log(err);
+    })
+  }
+  
+  /**
+   * Retrieve name and price for specific barcode.
+   * 
+   */
+  retrieve(barcode) {
+    console.log('hello...');
+    this.db_obj.executeSql(`SELECT name,price FROM itemlist WHERE barcode = '${barcode}'`, [])
+    .then(res => {
+      this.data.name = res.rows.item(0).name;
+      this.data.price = res.rows.item(0).price;
+      console.log('barcode result..', res.rows.item(0));
+      console.log(this.data);
     })
   }
 
@@ -124,14 +156,15 @@ export class HomePage implements OnInit {
     this.insertDB();
     loading.dismiss();
     this.dismiss();
+    window.location.reload();
   }
 
   /**
-   * Insert item data into items table.
+   * Insert item data into cartItems table.
    * 
    */
   insertDB() {
-    this.db_obj.executeSql(`INSERT INTO items(barcode, name, quantity, price) VALUES ('${this.data.barcode}', '${this.data.itemName}', '${this.data.quantity}', '${this.data.price}')`, [])
+    this.db_obj.executeSql(`INSERT INTO cartItems(barcode, name, quantity, price) VALUES ('${this.data.barcode}', '${this.data.itemName}', '${this.data.quantity}', '${this.data.price}')`, [])
     .then(() => {
       console.log('A new item was created!')
     })
@@ -141,11 +174,11 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * Get items data from items table.
+   * Get cartItems data from cartItems table.
    * 
    */
-  getItems() {
-    this.db_obj.executeSql('SELECT * FROM items', [])
+  getcartItems() {
+    this.db_obj.executeSql('SELECT * FROM cartItems', [])
     .then((res) => {
       for(var i=0; i<res.rows.length; i++)
       {
@@ -160,7 +193,7 @@ export class HomePage implements OnInit {
    * 
    */
   deleteItem(item) {
-    this.db_obj.executeSql(`DELETE FROM items WHERE id=${item.id}`, [])
+    this.db_obj.executeSql(`DELETE FROM cartItems WHERE id=${item.id}`, [])
     .then(() => {
       console.log('An item was deleted.');
       window.location.reload();
@@ -191,5 +224,41 @@ export class HomePage implements OnInit {
       ]
     });
     alert.present();
+  }
+
+  /**
+   * Update cart items modal.
+   * 
+   */
+  async updateModal(item) {
+    console.log('Item..',item);
+    const modal = await this.modalCtrl.create({
+      component: UpdatePage,
+      componentProps: {
+        'id': item.id,
+        'barcode': item.barcode,
+        'name': item.name,
+        'quantity': item.quantity,
+        'price': item.price
+      },
+      initialBreakpoint: 0.9,
+    });
+    return await modal.present();
+  }
+
+  /**
+   * Clear all items.
+   * 
+   */
+  clearAll() {
+    console.log('clearning...');
+    this.db_obj.executeSql('DELETE FROM cartItems', [])
+    .then(() => {
+      console.log('All cart items were cleared!');
+      window.location.reload();
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 }

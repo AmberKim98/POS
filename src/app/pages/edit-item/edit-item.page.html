@@ -1,0 +1,41 @@
+<ion-content>
+  <form class="ion-margin-vertical" [formGroup]="myForm" (ngSubmit)="onSubmit()" novalidate>
+    <ion-item lines="none">
+      <ion-label position="stacked" class="label">Code</ion-label>
+      <ion-row>
+        <ion-col size="10" class="ion-no-padding">
+          <ion-input type="text" formControlName="barcode" class="ion-margin-top ion-no-padding"></ion-input>
+        </ion-col>
+        <ion-col size="2" class="ion-no-padding ion-align-self-end">
+          <ion-button expand="full" class="scan-btn ion-text-capitalize ion-align-self-end" size="medium"
+            (click)="scan()">Scan</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label position="stacked" class="label">Item Name</ion-label>
+      <ion-input type="text" formControlName="itemName" class="ion-margin-top ion-no-padding">
+      </ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="stacked" class="label">Price</ion-label>
+      <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding"></ion-input>
+    </ion-item>
+
+    <ion-row class="ion-margin-horizontal ion-margin-vertical">
+      <ion-col size="4" class="ion-justify-content-center ion-no-padding">
+        <ion-button type="reset" expand="block" color="light" (click)="dismiss()">Cancel
+        </ion-button>
+      </ion-col>
+      <ion-col size="4" class="ion-justify-content-center ion-no-padding">
+        <ion-button type="reset" expand="block" color="medium" (click)="confirmAlert()">Delete
+        </ion-button>
+      </ion-col>
+      <ion-col size="4" class="ion-justify-content-center ion-align-self-center ion-align-items-center ion-no-padding">
+        <ion-button type="submit" expand="block" class="item-submit">OK</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

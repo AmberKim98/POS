@@ -15,75 +15,97 @@
   <form [formGroup]="myForm" (ngSubmit)="onSubmit()" novalidate>
     <ion-item lines="none">
       <ion-label position="stacked" class="label">Name: </ion-label>
-      <ion-input type="text" formControlName="name" class="ion-margin-top ion-padding-start" placeholder="Please Enter Name"></ion-input>
+      <ion-input type="text" formControlName="name" class="ion-margin-top ion-padding-start"
+        placeholder="Please Enter Name"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="submitted && errorControl.name.errors?.required || myForm.get('name').touched && myForm.get('name').pristine" lines="none">
+    <ion-item
+      *ngIf="submitted && errorControl.name.errors?.required || myForm.get('name').touched && myForm.get('name').pristine"
+      lines="none">
       <ion-text color="danger" class="error-msg">Name is required!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.name.errors?.maxlength && (myForm.get('name').dirty || myForm.get('name').touched)" lines="none">
+    <ion-item *ngIf="errorControl.name.errors?.maxlength && (myForm.get('name').dirty || myForm.get('name').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Name must not be exceeded 20 chars!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
     <ion-item lines="none">
       <ion-label position="stacked" class="label">Email: </ion-label>
-      <ion-input type="text" formControlName="email" class="ion-margin-top ion-padding-start" placeholder="Please Enter Email"></ion-input>
+      <ion-input type="text" formControlName="email" class="ion-margin-top ion-padding-start"
+        placeholder="Please Enter Email"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="submitted && errorControl.email.errors?.required || myForm.get('email').touched && myForm.get('email').pristine" lines="none">
+    <ion-item
+      *ngIf="submitted && errorControl.email.errors?.required || myForm.get('email').touched && myForm.get('email').pristine"
+      lines="none">
       <ion-text color="danger" class="error-msg">Email is required!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.email.errors?.email && (myForm.get('email').dirty || myForm.get('email').touched)" lines="none">
+    <ion-item *ngIf="errorControl.email.errors?.email && (myForm.get('email').dirty || myForm.get('email').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Email format is invalid!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
     <ion-item lines="none">
       <ion-label position="stacked" class="label">Password: </ion-label>
-      <ion-input type="password" formControlName="password" class="ion-margin-top ion-padding-start" placeholder="Type a New Password"></ion-input>
+      <ion-input type="password" formControlName="password" class="ion-margin-top ion-padding-start"
+        placeholder="Type a New Password"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="submitted && errorControl.password.errors?.required || myForm.get('password').touched && myForm.get('password').pristine" lines="none">
+    <ion-item
+      *ngIf="submitted && errorControl.password.errors?.required || myForm.get('password').touched && myForm.get('password').pristine"
+      lines="none">
       <ion-text color="danger" class="error-msg">Password is required!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.password.errors?.minlength && (myForm.get('password').dirty || myForm.get('password').touched)" lines="none">
+    <ion-item
+      *ngIf="errorControl.password.errors?.minlength && (myForm.get('password').dirty || myForm.get('password').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Password must be at least 6 chars long!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.password.errors?.maxlength && (myForm.get('password').dirty || myForm.get('password').touched)" lines="none">
+    <ion-item
+      *ngIf="errorControl.password.errors?.maxlength && (myForm.get('password').dirty || myForm.get('password').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Password must be at most 15 chars long!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
     <ion-item lines="none">
       <ion-label position="stacked" class="label">Confirmation Password: </ion-label>
-      <ion-input type="password" formControlName="password_confirmation" class="ion-margin-top ion-padding-start" placeholder="Retype your Password"></ion-input>
+      <ion-input type="password" formControlName="password_confirmation" class="ion-margin-top ion-padding-start"
+        placeholder="Retype your Password"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="submitted && errorControl.password_confirmation.errors?.required || myForm.get('password_confirmation').touched && myForm.get('password_confirmation').pristine" lines="none">
+    <ion-item
+      *ngIf="submitted && errorControl.password_confirmation.errors?.required || myForm.get('password_confirmation').touched && myForm.get('password_confirmation').pristine"
+      lines="none">
       <ion-text color="danger" class="error-msg">Confirmation Password is required!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
-    <ion-item *ngIf="!myForm.get('password_confirmation').errors && myForm.hasError('passwordNotMatch') && (myForm.get('password_confirmation').dirty || myForm.get('password_confirmation').touched)" lines="none">
+    <ion-item
+      *ngIf="!myForm.get('password_confirmation').errors && myForm.hasError('passwordNotMatch') && (myForm.get('password_confirmation').dirty || myForm.get('password_confirmation').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Confirmation Password does not match!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
 
     <ion-item lines="none">
       <ion-label position="stacked" class="label">Phone: </ion-label>
-      <ion-input type="tel" formControlName="phone" class="ion-margin-top ion-padding-start" placeholder="Enter your Phone"></ion-input>
+      <ion-input type="tel" formControlName="phone" class="ion-margin-top ion-padding-start"
+        placeholder="Enter your Phone"></ion-input>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.phone.errors?.pattern && (myForm.get('phone').dirty || myForm.get('phone').touched)" lines="none">
+    <ion-item *ngIf="errorControl.phone.errors?.pattern && (myForm.get('phone').dirty || myForm.get('phone').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Phone number format is invalid!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
@@ -107,7 +129,9 @@
       </ion-radio-group>
     </ion-item>
 
-    <ion-item *ngIf="submitted && errorControl.gender.errors?.required || myForm.get('gender').touched && myForm.get('gender').pristine" lines="none">
+    <ion-item
+      *ngIf="submitted && errorControl.gender.errors?.required || myForm.get('gender').touched && myForm.get('gender').pristine"
+      lines="none">
       <ion-text color="danger" class="error-msg">Gender is required.</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
@@ -117,11 +141,13 @@
       <ion-textarea formControlName="address" placeholder="Enter Your Address"></ion-textarea>
     </ion-item>
 
-    <ion-item *ngIf="errorControl.address.errors?.maxlength && (myForm.get('address').dirty || myForm.get('address').touched)" lines="none">
+    <ion-item
+      *ngIf="errorControl.address.errors?.maxlength && (myForm.get('address').dirty || myForm.get('address').touched)"
+      lines="none">
       <ion-text color="danger" class="error-msg">Address should not be exceeded 30 chars!</ion-text>
       <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
     </ion-item>
-    
+
     <ion-row class="ion-justify-content-center ion-margin-bottom">
       <ion-button color="success ion-text-capitalize" type="submit">Sign Up</ion-button>
     </ion-row>

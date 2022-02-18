@@ -1,7 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-menu-button slot="start" color="light"></ion-menu-button>
-    <ion-title class="ion-no-padding">Home</ion-title>
+    <ion-row>
+      <ion-col size="2">
+        <ion-menu-button color="light"></ion-menu-button>
+      </ion-col>
+      <ion-col size="5" class="ion-align-self-center">
+        <ion-title class="ion-no-padding">Home</ion-title>
+      </ion-col>
+      <ion-col size="5" class="ion-align-self-center">
+        <ion-button fill="none" (click)="clearAll()" class="ion-text-capitalize">
+          <ion-title>Clear All</ion-title>
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-toolbar>
 </ion-header>
 
@@ -13,14 +24,14 @@
   </ion-toolbar>
   <ion-content>
     <ion-item lines="none">
-      <ion-icon name="home"></ion-icon>
+      <ion-icon name="home" [routerLink]="['/home']"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">Home</ion-label>
     </ion-item>
     <ion-item lines="none" [routerLink]="['/register']">
       <ion-icon name="clipboard-outline"></ion-icon>
       <ion-label class="ion-margin-start">Register</ion-label>
     </ion-item>
-    <ion-item lines="none">
+    <ion-item lines="none" [routerLink]="['/list']">
       <ion-icon name="list"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">All Items List</ion-label>
     </ion-item>
@@ -41,66 +52,64 @@
 
 <ion-content color="light" [fullscreen]="true">
   <div id="container">
-    
-    <div *ngFor="let item of row_data">
-      <ion-card>      
-        <ion-card-header class="ion-no-padding">
-          <ion-grid class="ion-no-padding">
-            <ion-row>
-              <ion-col class="ion-align-self-center">
-                <ion-card-subtitle class="float-left"><b>{{ item.name }}</b><small>&nbsp;&nbsp;/{{ item.price }}</small></ion-card-subtitle>
-              </ion-col>
-              <ion-col>
-                <ion-button fill="none" size="small" class="ion-no-padding float-right" id="ellipsis-btn">
-                  <ion-icon name="ellipsis-vertical" class="ellipsis-icon"></ion-icon>
-                </ion-button>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-card-subtitle class="float-left"><small>{{ item.barcode }}</small></ion-card-subtitle>
-            </ion-row>
-          </ion-grid>
-        </ion-card-header>
+    <ion-card *ngFor="let item of row_data; let i = index">
+      <ion-card-header class="ion-no-padding">
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="9" class="ion-align-self-center">
+              <ion-card-subtitle class="float-left"><b>{{ item.name }}</b><small>&nbsp;&nbsp;/{{ item.price }}Ks</small>
+              </ion-card-subtitle>
+            </ion-col>
+            <ion-col size="3">
+              <ion-button fill="none" size="small" class="ion-no-padding float-right" id="{{ 'ellipsis-btn-'+i }}">
+                <ion-icon name="ellipsis-vertical" class="ellipsis-icon"></ion-icon>
+              </ion-button>
 
-        <!-- Ellipsis Button Click Modal -->
-        <ion-modal trigger="ellipsis-btn" initialBreakpoint="0.2" class="ellipsisModal" tabindex="-1">
-          <ng-template>
-            <ion-list>
-              <ion-item lines="none" class="options">
-                <ion-label class="ion-padding-start" id="updateItemBtn">Edit</ion-label>
-                <ion-icon class="edit-icon ion-no-margin" name="create" slot="start"></ion-icon>
-              </ion-item>
-              <ion-item lines="none" class="options" (click)="confirmAlert(item)">
-                <ion-label class="ion-padding-start">Delete</ion-label>
-                <ion-icon class="delete-icon ion-no-margin" name="trash" slot="start"></ion-icon>
-              </ion-item>
-            </ion-list>
-          </ng-template>
-        </ion-modal>
-  
-        <ion-card-content class="ion-no-padding">
-          <ion-grid>
-            <ion-row>
-              <ion-col>
-                <ion-text class="float-left"><small>Total:</small></ion-text>
-              </ion-col>
-              <ion-col>
-                <ion-text class="float-right"><small>Qty:</small></ion-text>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-text class="float-left"><b>{{ item.price*item.quantity }}</b></ion-text>
-              </ion-col>
-              <ion-col>
-                <ion-text class="float-right"><b>{{ item.quantity }}</b></ion-text>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-card-content>
-      </ion-card>  
-    </div>
-    
+              <!-- Ellipsis Button Click Modal -->
+              <ion-modal trigger="{{'ellipsis-btn-'+i}}" initialBreakpoint="0.2" class="ellipsisModal">
+                <ng-template>
+                  <ion-list>
+                    <ion-item lines="none" class="options" (click)="updateModal(item)">
+                      <ion-label class="ion-padding-start">Edit</ion-label>
+                      <ion-icon class="edit-icon ion-no-margin" name="create" slot="start"></ion-icon>
+                    </ion-item>
+                    <ion-item lines="none" class="options" (click)="confirmAlert(item)">
+                      <ion-label class="ion-padding-start">Delete</ion-label>
+                      <ion-icon class="delete-icon ion-no-margin" name="trash" slot="start"></ion-icon>
+                    </ion-item>
+                  </ion-list>
+                </ng-template>
+              </ion-modal>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-card-subtitle class="float-left"><small>{{ item.barcode }}</small></ion-card-subtitle>
+          </ion-row>
+        </ion-grid>
+      </ion-card-header>
+
+      <ion-card-content class="ion-no-padding">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-text class="float-left"><small>Total:</small></ion-text>
+            </ion-col>
+            <ion-col>
+              <ion-text class="float-right"><small>Qty:</small></ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-text class="float-left"><b>{{ item.price*item.quantity }}</b></ion-text>
+            </ion-col>
+            <ion-col>
+              <ion-text class="float-right"><b>{{ item.quantity }}</b></ion-text>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
     <div class="ion-margin-horizontal ion-margin-vertical">
       <ion-button expand="block" class="addItem-btn ion-text-capitalize" id="addItemBtn">
         Add Item
@@ -115,25 +124,32 @@
               <ion-label position="stacked" class="label">Code</ion-label>
               <ion-row>
                 <ion-col size="10" class="ion-no-padding">
-                  <ion-input type="text" formControlName="barcode" value="{{ data.barcode }}" class="ion-margin-top ion-no-padding"></ion-input>
+                  <ion-input type="text" formControlName="barcode" value="{{ data.barcode }}"
+                    class="ion-margin-top ion-no-padding"></ion-input>
                 </ion-col>
                 <ion-col size="2" class="ion-no-padding ion-align-self-end">
-                  <ion-button expand="full" class="scan-btn ion-text-capitalize ion-align-self-end" size="medium" (click)="scan()">Scan</ion-button>
-                </ion-col>                
+                  <ion-button expand="full" class="scan-btn ion-text-capitalize ion-align-self-end" size="medium"
+                    (click)="scan()">Scan</ion-button>
+                </ion-col>
               </ion-row>
             </ion-item>
 
-            <ion-item *ngIf="submitted && errorControl.barcode.errors?.required || myForm.get('barcode').touched && myForm.get('barcode').pristine" lines="none">
+            <ion-item
+              *ngIf="submitted && errorControl.barcode.errors?.required || myForm.get('barcode').touched && myForm.get('barcode').pristine"
+              lines="none">
               <ion-text color="danger" class="error-msg">Please scan the item's barcode.</ion-text>
               <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
             </ion-item>
 
             <ion-item lines="none">
               <ion-label position="stacked" class="label">Item Name</ion-label>
-              <ion-input type="text" formControlName="itemName" class="ion-margin-top ion-no-padding"></ion-input>
+              <ion-input type="text" formControlName="itemName" value="{{ data.name }}"
+                class="ion-margin-top ion-no-padding"></ion-input>
             </ion-item>
 
-            <ion-item *ngIf="submitted && errorControl.itemName.errors?.required || myForm.get('itemName').touched && myForm.get('itemName').pristine" lines="none">
+            <ion-item
+              *ngIf="submitted && errorControl.itemName.errors?.required || myForm.get('itemName').touched && myForm.get('itemName').pristine"
+              lines="none">
               <ion-text color="danger" class="error-msg">Please fill item name.</ion-text>
               <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
             </ion-item>
@@ -143,73 +159,34 @@
               <ion-input type="text" formControlName="quantity" class="ion-margin-top ion-no-padding"></ion-input>
             </ion-item>
 
-            <ion-item *ngIf="submitted && errorControl.quantity.errors?.required || myForm.get('quantity').touched && myForm.get('quantity').pristine" lines="none">
+            <ion-item
+              *ngIf="submitted && errorControl.quantity.errors?.required || myForm.get('quantity').touched && myForm.get('quantity').pristine"
+              lines="none">
               <ion-text color="danger" class="error-msg">Please fill the quantity.</ion-text>
               <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
             </ion-item>
 
             <ion-item lines="none">
               <ion-label position="stacked" class="label">Price</ion-label>
-              <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding"></ion-input>
+              <ion-input type="text" formControlName="price" value="{{ data.price }}"
+                class="ion-margin-vertical ion-no-padding" disabled></ion-input>
             </ion-item>
 
-            <ion-item *ngIf="submitted && errorControl.price.errors?.required || myForm.get('price').touched && myForm.get('price').pristine" lines="none">
+            <ion-item
+              *ngIf="submitted && errorControl.price.errors?.required || myForm.get('price').touched && myForm.get('price').pristine"
+              lines="none">
               <ion-text color="danger" class="error-msg">Please fill the item price.</ion-text>
               <ion-icon name="information-circle-outline" color="danger" slot="start" class="ion-no-margin"></ion-icon>
             </ion-item>
 
             <ion-row class="ion-margin ion-justify-content-end">
-              <ion-text class="total-txt"><b>Total: </b></ion-text>
+              <ion-text class="total-txt"><b>Total: {{ myForm.get('quantity').value*myForm.get('price').value }}</b>
+              </ion-text>
             </ion-row>
             <ion-row class="ion-margin-horizontal">
               <ion-col class="ion-no-padding">
-                <ion-button type="reset" color="medium" (click)="dismiss()" class="cancelBtn float-left">Cancel</ion-button>
-              </ion-col>
-              <ion-col class="ion-no-padding">
-                <ion-button type="submit" class="item-submit float-right">OK</ion-button>
-              </ion-col>
-            </ion-row>
-          </form>
-        </ng-template>
-      </ion-modal>
-
-      <!-- Update Item Modal -->
-      <ion-modal trigger="updateItemBtn" initialBreakpoint="0.9" class="addItemModal">
-        <ng-template class="addItemForm">
-          <form class="ion-margin-vertical" [formGroup]="myForm" (ngSubmit)="onSubmit()" novalidate>
-            <ion-item lines="none">
-              <ion-label position="stacked" class="label">Code</ion-label>
-              <ion-row>
-                <ion-col size="10" class="ion-no-padding">
-                  <ion-input type="text" formControlName="barcode" value="{{ item.barcode }}" class="ion-margin-top ion-no-padding"></ion-input>
-                </ion-col>
-                <ion-col size="2" class="ion-no-padding ion-align-self-end">
-                  <ion-button expand="full" class="scan-btn ion-text-capitalize ion-align-self-end" size="medium" (click)="scan()">Scan</ion-button>
-                </ion-col>                
-              </ion-row>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-label position="stacked" class="label">Item Name</ion-label>
-              <ion-input type="text" formControlName="itemName" value="item.name" class="ion-margin-top ion-no-padding"></ion-input>
-            </ion-item>
-
-            <ion-item lines="none">
-              <ion-label position="stacked" class="label">Qty</ion-label>
-              <ion-input type="text" formControlName="quantity" class="ion-margin-top ion-no-padding"></ion-input>
-            </ion-item>
-
-            <ion-item lines="full">
-              <ion-label position="stacked" class="label">Price</ion-label>
-              <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding"></ion-input>
-            </ion-item>
-
-            <ion-row class="ion-margin ion-justify-content-end">
-              <ion-text class="total-txt"><b>Total: </b></ion-text>
-            </ion-row>
-            <ion-row class="ion-margin-horizontal">
-              <ion-col class="ion-no-padding">
-                <ion-button type="reset" color="medium" (click)="dismiss()" class="cancelBtn float-left">Cancel</ion-button>
+                <ion-button type="reset" color="light" (click)="dismiss()" class="cancelBtn float-left">Cancel
+                </ion-button>
               </ion-col>
               <ion-col class="ion-no-padding">
                 <ion-button type="submit" class="item-submit float-right">OK</ion-button>
@@ -219,5 +196,9 @@
         </ng-template>
       </ion-modal>
     </div>
+  </div>
+
+  <div>
+    <ion-button expand="full" class="next-btn">Next</ion-button>
   </div>
 </ion-content>

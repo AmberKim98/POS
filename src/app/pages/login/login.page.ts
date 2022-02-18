@@ -26,7 +26,7 @@ export class LoginPage implements OnInit {
         console.log(this.users);
       })
     })
-  }
+  } 
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
