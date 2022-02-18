@@ -1,16 +1,16 @@
 #container {
-    margin-top:20px;
+  margin-top: 20px;
 }
 .error-msg {
-    font-size: 14px;
-    padding-left: 5px;
-    color: var(--ion-color-danger);
+  font-size: 14px;
+  padding-left: 5px;
+  color: var(--ion-color-danger);
 }
 ion-toolbar {
-    --background: #144172;
+  --background: #144172;
 }
 ion-title {
-    --color: #ffffff;
+  --color: #ffffff;
 }
 ion-menu ion-item:first-child {
   margin-top: 8px;
@@ -22,8 +22,8 @@ ion-menu ion-item {
 ion-menu ion-item:hover,
 ion-popover .options:hover,
 .ellipsisModal ion-item:hover {
-    --background: #f2f2f2;
-    cursor: pointer;
+  --background: #f2f2f2;
+  cursor: pointer;
 }
 ion-menu ion-item:hover ion-icon,
 ion-menu ion-item:hover ion-label,
@@ -31,72 +31,72 @@ ion-popover .options:hover ion-label,
 ion-modal ion-item:hover ion-label,
 ion-modal ion-item:hover .delete-icon,
 ion-modal ion-item:hover .edit-icon {
-    color: #144172;
+  color: #144172;
 }
 ion-card {
-    border-radius: 8px;
-    --background: #ECF9FF;
+  border-radius: 8px;
+  --background: #ecf9ff;
 }
 ion-card-header {
-    border-bottom: 1px solid #92949c;
-    margin: 10px 10px 0 10px;
-    padding-bottom: 10px;
+  border-bottom: 1px solid #92949c;
+  margin: 10px 10px 0 10px;
+  padding-bottom: 10px;
 }
 ion-card-subtitle {
-    font-size: 13px;
+  font-size: 13px;
 }
 .ellipsis-icon {
-    font-size: 13px;
+  font-size: 13px;
 }
 ion-popover ion-label {
-    font-size: 13px;
+  font-size: 13px;
 }
 .addItem-btn {
-    border-radius: 5px;
-    --color: #144172;
-    font-weight: bold;
-    --background: #ECF9FF;
+  border-radius: 5px;
+  --color: #144172;
+  font-weight: bold;
+  --background: #ecf9ff;
 }
 .addItemForm {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
 }
 .label {
-    font-size: 18px;
-    font-weight: bold;
-    --color: #144172;
+  font-size: 18px;
+  font-weight: bold;
+  --color: #144172;
 }
 ion-input {
-    border: 2px solid #92949c;
-    border-radius: 5px;
+  border: 2px solid #92949c;
+  border-radius: 5px;
 }
 .scan-btn,
 .item-submit,
 .next-btn {
-    --background: #144172;
+  --background: #144172;
 }
 .total-txt {
-    color: #144172;
+  color: #144172;
 }
 .plus-icon {
-    font-size: 20px;
-    padding-left: 5px;
-    color: #144172;
+  font-size: 20px;
+  padding-left: 5px;
+  color: #144172;
 }
 .float-right {
-    float: right;
+  float: right;
 }
 .float-left {
-    float: left;
+  float: left;
 }
 .scan-btn {
-    font-size: 12px;
+  font-size: 12px;
 }
 .next-btn {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
