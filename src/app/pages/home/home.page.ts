@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
   public cartUpdate;
   cartItems:any = [];
   items: any = [];
-  retrieveBarcodeData: boolean;
+  retrieveBarcodeData = true;
 
   constructor(
     private modalCtrl: ModalController,
@@ -118,9 +118,11 @@ export class HomePage implements OnInit {
       this.items = data;
       if(this.items.rows.length == 0) 
       {
+        this.retrieveBarcodeData = false;
         console.log('no data');
       }
       else {
+        this.retrieveBarcodeData = true;
         this.data.itemName = this.items.rows.item(0).name;
         this.data.price = this.items.rows.item(0).price;
       }
@@ -147,7 +149,12 @@ export class HomePage implements OnInit {
 
     if(this.items.rows.length == 0) {
       console.log('inserting new item...');
-      this.dbService.addNewItem(this.data).then(res => {
+      let item = {
+        barcode: this.data.barcode,
+        name: this.data.itemName,
+        price: this.data.price
+      }
+      this.dbService.addNewItem(item).then(res => {
         console.log(res);
       })
     }

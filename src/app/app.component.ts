@@ -15,7 +15,7 @@ export class AppComponent {
   ) {
     this.platform.backButton.subscribeWithPriority(100, (processNextHandler) => {
       console.log('Back Press Handler');
-      if(this.location.isCurrentPathEqualTo('/home'))
+      if((this.location.isCurrentPathEqualTo('/home')) || (this.location.isCurrentPathEqualTo('/login')))
       {
         console.log('Show Exit Alert!');
         this.showExitConfirm();
