@@ -19,18 +19,19 @@
       </ion-input>
     </ion-item>
 
-    <ion-item lines="none">
+    <ion-item lines="none" *ngIf="cartUpdate === true">
       <ion-label position="stacked" class="label">Qty</ion-label>
       <ion-input type="text" formControlName="quantity" class="ion-margin-top ion-no-padding"></ion-input>
     </ion-item>
 
     <ion-item lines="full">
       <ion-label position="stacked" class="label">Price</ion-label>
-      <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding" disabled></ion-input>
+      <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding" *ngIf="cartUpdate !== true"></ion-input>
+      <ion-input type="text" formControlName="price" class="ion-margin-vertical ion-no-padding" disabled *ngIf="cartUpdate === true" ></ion-input>
     </ion-item>
 
-    <ion-row class="ion-margin ion-justify-content-end">
-      <ion-text class="total-txt"><b>Total: </b></ion-text>
+    <ion-row class="ion-margin ion-justify-content-end" *ngIf="cartUpdate === true">
+      <ion-text class="total-txt"><b>Total: {{ myForm.get('quantity').value*myForm.get('price').value }}</b></ion-text>
     </ion-row>
     <ion-row class="ion-margin-horizontal">
       <ion-col size="4" class="ion-justify-content-center ion-no-padding">

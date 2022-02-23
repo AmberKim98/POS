@@ -21,13 +21,16 @@ export class UpdatePage implements OnInit {
   @Input() name: string;
   @Input() quantity: string;
   @Input() price: string;
+  @Input() cartUpdate: boolean;
+  @Input() itemUpdate: boolean;
 
   constructor(
     private barcodeScanner: BarcodeScanner,
     private alertController: AlertController,
     private modalCtrl: ModalController,
     public formBuilder: FormBuilder,
-    private dbService: DatabaseService
+    private dbService: DatabaseService,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -60,14 +63,10 @@ export class UpdatePage implements OnInit {
    */
    retrieve(barcode) {
     console.log('hello...');
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql(`SELECT name,price FROM itemlist WHERE barcode = '${barcode}'`, [])
-      .then(res => {
-        console.log('barcode result..', res.rows.item(0));
-        this.myForm.get('itemName').setValue(res.rows.item(0).name);
-        this.myForm.get('price').setValue(res.rows.item(0).price); 
-      })
+    this.dbService.retrieve(barcode).then(data => {
+      this.data = data;
+      this.myForm.get('itemName').setValue(this.data.rows.item(0).name);
+      this.myForm.get('price').setValue(this.data.rows.item(0).price); 
     })
   }
 
@@ -83,21 +82,18 @@ export class UpdatePage implements OnInit {
    * Update cart item.
    * 
    */
-  onSubmit() {
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql(`UPDATE cartItems SET 
-      barcode = '${this.myForm.get('barcode').value}', 
-      name = '${this.myForm.get('itemName').value}',
-      quantity = '${this.myForm.get('quantity').value}',
-      price = '${this.myForm.get('price').value}' 
-      WHERE id = ${this.id}`, [])
-      .then(() => {
-        this.dismiss();
-        window.location.reload();
-        console.log('Item was updated!');
-      })
-    })
+  async onSubmit() {
+    console.log('submitting form...');
+    console.log(this.myForm);
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500
+    });
+    loading.present();
+    console.log(this.myForm, this.id, this.cartUpdate, this.itemUpdate);
+    this.dbService.update(this.myForm, this.id, this.cartUpdate, this.itemUpdate);
+    this.dismiss();
   }
 
   /**
@@ -105,18 +101,16 @@ export class UpdatePage implements OnInit {
    * 
    */
    deleteItem(id) {
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql(`DELETE FROM carts WHERE id=${id}`, [])
-      .then(() => {
+     if(this.cartUpdate == true) {
+      this.dbService.deleteCartItem(id).then(() => {
+        console.log('A cart item was deleted.');
+      });
+     }
+     else {
+      this.dbService.deleteItem(id).then(() => {
         console.log('An item was deleted.');
-        this.dismiss();
-        window.location.reload();
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    })
+      });
+     }
   }
 
   /**

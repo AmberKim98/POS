@@ -28,9 +28,20 @@ const routes: Routes = [
     loadChildren: () => import('./pages/list/list.module').then( m => m.ListPageModule)
   },
   {
-    path: 'edit-item',
-    loadChildren: () => import('./pages/edit-item/edit-item.module').then( m => m.EditItemPageModule)
+    path: 'total',
+    loadChildren: () => import('./pages/total/total.module').then( m => m.TotalPageModule)
   },
+  {
+    path: 'about',
+    loadChildren: () => import('./pages/about/about.module').then( m => m.AboutPageModule)
+  },
+  {
+    path: 'recent',
+    loadChildren: () => import('./pages/recent/recent.module').then( m => m.RecentPageModule)
+  },
+
+
+
 
 
 ];

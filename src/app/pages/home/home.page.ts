@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, Platform, IonRouterOutlet } from '@ionic/angular';
 import { BarcodeScanner } from '@awesome-cordova-plugins/barcode-scanner/ngx';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UpdatePage } from '../update/update.page';
+import { DatabaseService } from 'src/app/services/database/database.service';
+import  { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +18,11 @@ export class HomePage implements OnInit {
   data:any = [];
   myForm: FormGroup;
   submitted = false;
+  public itemUpdate;
+  public cartUpdate;
+  cartItems:any = [];
+  items: any = [];
+  retrieveBarcodeData: boolean;
 
   constructor(
     private modalCtrl: ModalController,
@@ -24,7 +31,9 @@ export class HomePage implements OnInit {
     public formBuilder: FormBuilder,
     private platform: Platform,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private dbService: DatabaseService,
+    private router: Router
   ) {
     this.data = {
       barcode: '',
@@ -34,8 +43,17 @@ export class HomePage implements OnInit {
     }
 
     this.platform.ready().then(() => {
-      this.createDB();
+      this.dbService.getCartItems().then(res => {
+        this.cartItems = res;
+        for(var i=0; i<this.cartItems.rows.length; i++)
+        {
+          this.row_data.push(this.cartItems.rows.item(i));
+        }
+        console.log(this.row_data);
+      })
     })
+    this.createCartTable();
+    this.createItemTable();
    }
 
   ngOnInit() {
@@ -47,6 +65,10 @@ export class HomePage implements OnInit {
     })
   }
 
+  addBtn() {
+    console.log('clicked add item btn');
+  }
+
   /**
    * Error controls.
    * 
@@ -56,38 +78,11 @@ export class HomePage implements OnInit {
   }
 
   /**
-   * Create database.
-   *  
-   */
-  createDB() {
-    this.sqlite.create({
-      name: 'pos.db',
-      location: 'default'
-    })
-    .then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.createCartTable();
-      this.createItemTable();
-      this.getcartItems();
-      console.log('Database was created.');
-    })
-    .catch(err => {
-      console.log(err);
-    })
-  }
-
-  /**
    * Create cartItems table.
    * 
    */
   createCartTable() {
-    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS cartItems(id INTEGER PRIMARY KEY, barcode VARCHAR(255), name VARCHAR(255), quantity VARCHAR(255), price VARCHAR(255))', [])
-    .then(() => {
-      console.log('Cart Items table was created!');
-    })
-    .catch(err => {
-      console.log(err);
-    })
+    this.dbService.createCartTable();
   }
 
   /**
@@ -95,21 +90,7 @@ export class HomePage implements OnInit {
    * 
    */
    createItemTable() {
-    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS itemlist(id INTEGER PRIMARY KEY, barcode VARCHAR(255), name VARCHAR(255), price VARCHAR(255))', [])
-    .then(() => {
-      console.log('Items table was created!');
-    })
-    .catch(err => {
-      console.log(err);
-    })
-  }
-
-  /**
-   * Dismiss modal box.
-   * 
-   */
-  dismiss() {
-    this.modalCtrl.dismiss();
+    this.dbService.createItemTable();
   }
 
   /**
@@ -133,11 +114,17 @@ export class HomePage implements OnInit {
    */
   retrieve(barcode) {
     console.log('hello...');
-    this.db_obj.executeSql(`SELECT name,price FROM itemlist WHERE barcode = '${barcode}'`, [])
-    .then(res => {
-      this.data.name = res.rows.item(0).name;
-      this.data.price = res.rows.item(0).price;
-      console.log('barcode result..', res.rows.item(0));
+    this.dbService.retrieve(barcode).then(data => {
+      this.items = data;
+      if(this.items.rows.length == 0) 
+      {
+        console.log('no data');
+      }
+      else {
+        this.data.itemName = this.items.rows.item(0).name;
+        this.data.price = this.items.rows.item(0).price;
+      }
+      console.log('barcode result..', this.items.rows.item(0));
       console.log(this.data);
     })
   }
@@ -146,75 +133,92 @@ export class HomePage implements OnInit {
    * Submit new item addition form.
    * 
    */
-  async onSubmit() {
-    const loading = await this.loadingController.create();
+  onSubmit() {
     this.submitted = true;
+    this.myForm.get('barcode').clearValidators();
+    this.myForm.get('itemName').clearValidators();
+    this.myForm.get('quantity').clearValidators();
+    this.myForm.get('price').clearValidators();
+    this.data.barcode = this.myForm.get('barcode').value;
     this.data.itemName = this.myForm.get('itemName').value;
     this.data.quantity = this.myForm.get('quantity').value;
     this.data.price = this.myForm.get('price').value;
-    await loading.present();
+    console.log(this.data);
+
+    if(this.items.rows.length == 0) {
+      console.log('inserting new item...');
+      this.dbService.addNewItem(this.data).then(res => {
+        console.log(res);
+      })
+    }
+    console.log('inserting new cart item...');
     this.insertDB();
-    loading.dismiss();
+    this.myForm.reset();
     this.dismiss();
-    window.location.reload();
   }
 
   /**
    * Insert item data into cartItems table.
    * 
    */
-  insertDB() {
-    this.db_obj.executeSql(`INSERT INTO cartItems(barcode, name, quantity, price) VALUES ('${this.data.barcode}', '${this.data.itemName}', '${this.data.quantity}', '${this.data.price}')`, [])
-    .then(() => {
-      console.log('A new item was created!')
-    })
-    .catch(err => {
-      console.log(err);
-    })
+  async insertDB() {
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500
+    });
+    loading.present();
+    console.log('before adding...', this.row_data);
+    this.dbService.addNewCartItem(this.data).then((res) => {
+      this.items = res;
+      console.log('this item',this.items.rows.item(0));
+        let item = {
+          id: this.items.rows.item(0).id,
+          barcode: this.items.rows.item(0).barcode,
+          name: this.items.rows.item(0).name,
+          quantity: this.items.rows.item(0).quantity,
+          price: this.items.rows.item(0).price
+        }
+        this.row_data.push(item); 
+        console.log('after adding...', this.row_data);
+    });
   }
 
   /**
-   * Get cartItems data from cartItems table.
+   * Dismiss modal box.
    * 
    */
-  getcartItems() {
-    this.db_obj.executeSql('SELECT * FROM cartItems', [])
-    .then((res) => {
-      for(var i=0; i<res.rows.length; i++)
-      {
-        this.row_data.push(res.rows.item(i));
-      }
-      console.log(this.row_data);
-    })
+   dismiss() {
+    this.modalCtrl.dismiss();
   }
 
   /**
    * Delete item.
    * 
    */
-  deleteItem(item) {
-    this.db_obj.executeSql(`DELETE FROM cartItems WHERE id=${item.id}`, [])
-    .then(() => {
-      console.log('An item was deleted.');
-      window.location.reload();
+  deleteItem(id) {
+    console.log(id);
+    this.dbService.deleteCartItem(id).then(() => {
+      console.log('item was deleted');
     })
     .catch(err => {
       console.log(err);
-    })
+    });
   }
 
   /**
    * Show confirm alert.
    * 
    */
-  async confirmAlert(item) {
+  async confirmAlert(id) {
+    console.log('---ID---',id);
     const alert = await this.alertController.create({
       header: 'Are you sure you want to delete',
       buttons: [
         {
           text: 'Sure',
           handler: () => {
-            this.deleteItem(item);
+            this.deleteItem(id);
           }
         },
         {
@@ -231,6 +235,8 @@ export class HomePage implements OnInit {
    * 
    */
   async updateModal(item) {
+    this.cartUpdate = true;
+    this.itemUpdate = false;
     console.log('Item..',item);
     const modal = await this.modalCtrl.create({
       component: UpdatePage,
@@ -239,7 +245,9 @@ export class HomePage implements OnInit {
         'barcode': item.barcode,
         'name': item.name,
         'quantity': item.quantity,
-        'price': item.price
+        'price': item.price,
+        'cartUpdate': this.cartUpdate,
+        'itemUpdate': this.itemUpdate 
       },
       initialBreakpoint: 0.9,
     });
@@ -250,15 +258,29 @@ export class HomePage implements OnInit {
    * Clear all items.
    * 
    */
-  clearAll() {
-    console.log('clearning...');
-    this.db_obj.executeSql('DELETE FROM cartItems', [])
-    .then(() => {
-      console.log('All cart items were cleared!');
-      window.location.reload();
-    })
-    .catch(err => {
-      console.log(err);
+  async clearAll() {
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500
+    });
+    loading.present();
+    this.dbService.clearAllCarts();
+  }
+
+  /**
+   * Logout and navigate to home page.
+   * 
+   */
+  async logout() {
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500,
+    });
+    loading.present();
+    loading.onDidDismiss().then(() => {
+      this.router.navigate(['login']);
     })
   }
 }

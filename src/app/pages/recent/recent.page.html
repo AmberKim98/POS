@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-row>
+      <ion-col size="2">
+        <ion-back-button defaultHref="home" color="light" icon="chevron-back"></ion-back-button>
+      </ion-col>
+      <ion-col size="10" class="ion-align-self-center">
+        <ion-title class="ion-no-padding itemlist-ttl">Recent</ion-title>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let item of items; let i=index">
+    <ion-card-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="1">
+            <ion-text class="quantity">{{ item.quantity }}</ion-text>
+          </ion-col>
+          <ion-col size="7">
+            <ion-text><b>{{ item.name }}</b></ion-text>
+          </ion-col>
+          <ion-col size="4" class="ion-text-end">
+            <ion-text color="dark"><b>MMK {{ item.quantity * item.price }}</b></ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-header>
+    <ion-card-content class="ion-text-end">
+      <ion-text>Order purchased: <b>{{ today | date: 'dd/MM/yy' }}</b></ion-text>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

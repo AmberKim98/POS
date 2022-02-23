@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BarcodeScanner } from '@awesome-cordova-plugins/barcode-scanner/ngx';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
-import { AlertController, ModalController, Platform } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { DatabaseService } from 'src/app/services/database/database.service';
-import { EditItemPage } from '../edit-item/edit-item.page';
+import { UpdatePage } from '../update/update.page';
 
 @Component({
   selector: 'app-list',
@@ -18,9 +18,12 @@ export class ListPage implements OnInit {
   row_data:any = [];
   submitted = false;
   myForm: FormGroup;
+  public itemUpdate;
+  public cartUpdate;
 
   constructor(
     private platform: Platform,
+    private loadingController: LoadingController,
     private dbService: DatabaseService,
     private modalCtrl: ModalController,
     private formBuilder: FormBuilder,
@@ -51,18 +54,12 @@ export class ListPage implements OnInit {
    * 
    */
   getItems() {
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql('SELECT * FROM itemlist', [])
-      .then((res) => {
-        for(var i=0; i<res.rows.length; i++) {
-          this.items.push(res.rows.item(i));
-          console.log(this.items);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+    this.dbService.getItems().then((res) => {
+      this.data = res;
+      for(var i=0; i<this.data.rows.length; i++) {
+        this.items.push(this.data.rows.item(i));
+      }
+      console.log('getting items...',this.items);
     })
   }
 
@@ -78,14 +75,14 @@ export class ListPage implements OnInit {
    * Show confirm alert.
    * 
    */
-   async confirmAlert(item) {
+   async confirmAlert(id) {
     const alert = await this.alertController.create({
       header: 'Are you sure you want to delete',
       buttons: [
         {
           text: 'Sure',
           handler: () => {
-            this.deleteItem(item);
+            this.deleteItem(id);
           }
         },
         {
@@ -101,15 +98,14 @@ export class ListPage implements OnInit {
    * Delete item from items table.
    * 
    */
-  deleteItem(item) {
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql(`DELETE FROM itemlist WHERE id=${item.id}`, [])
-      .then(() => {
-        window.location.reload();
-        console.log('Item was deleted!');
-      })
+  deleteItem(id) {
+    console.log(id);
+    this.dbService.deleteItem(id).then(() => {
+      console.log('item was deleted');
     })
+    .catch(err => {
+      console.log(err);
+    });
   }
 
   /**
@@ -134,31 +130,43 @@ export class ListPage implements OnInit {
     this.modalCtrl.dismiss();
   }
 
-  onSubmit() {
+  async onSubmit() {
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500
+    });
+    loading.present();
     this.submitted = true;
     this.data.barcode = this.myForm.get('barcode').value;
     this.data.name = this.myForm.get('itemName').value;
     this.data.price = this.myForm.get('price').value;
 
-    this.dbService.openPosDB().then((db: SQLiteObject) => {
-      this.db_obj = db;
-      this.db_obj.executeSql(`SELECT * FROM itemlist WHERE barcode='${this.data.barcode}'`, [])
-      .then(res => {
-        console.log('if exists...', res.rows.length);
-        if(res.rows.length == 0)
-        {
-          this.db_obj.executeSql(`INSERT INTO itemlist(barcode,name,price) VALUES ('${this.data.barcode}', '${this.data.name}', '${this.data.price}')`, [])
-          .then(() => {
-            console.log('A new item was added!');
-            this.closeModal();
-            window.location.reload();
-          })
-          .catch(err => {
-            console.log(err);
-          })
-        }
-        else this.warningAlert();
-      })
+    this.dbService.checkIfExisted(this.data.barcode).then((res) => {
+      this.row_data = res;
+      console.log(this.row_data.rows.item(0));
+      if(this.row_data.rows.length == 0) {
+        this.dbService.addNewItem(this.data).then((res) => {
+          this.data = res;
+          console.log('this item',this.data.rows.item(0));
+          let item = {
+            id: this.data.rows.item(0).id,
+            barcode: this.data.rows.item(0).barcode,
+            name: this.data.rows.item(0).name,
+            price: this.data.rows.item(0).price
+          }
+          console.log('---item---', item);
+          // window.location.reload();
+          this.items.push(item); 
+          this.closeModal();
+          console.log('after adding...', this.items);
+        })
+      }
+      else {
+        loading.dismiss().then(() => {
+          this.warningAlert();
+        })
+      }
     })
   }
 
@@ -170,26 +178,35 @@ export class ListPage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Adding item failed!',
       message: 'The item you are trying to add is already existed.',
-      buttons: ['OK']
+      buttons: [
+        {
+          text: 'OK',
+          handler: () => this.closeModal()
+        }
+      ],
     });
     alert.present();
   }
 
   /**
-   * Update item list modal.
+   * Update cart items modal.
    * 
    */
    async updateModal(item) {
+    this.cartUpdate = false;
+    this.itemUpdate = true;
     console.log('Item..',item);
     const modal = await this.modalCtrl.create({
-      component: EditItemPage,
+      component: UpdatePage,
       componentProps: {
         'id': item.id,
         'barcode': item.barcode,
         'name': item.name,
-        'price': item.price
+        'price': item.price,
+        'cartUpdate': this.cartUpdate,
+        'itemUpdate': this.itemUpdate 
       },
-      initialBreakpoint: 0.7,
+      initialBreakpoint: 0.9,
     });
     return await modal.present();
   }

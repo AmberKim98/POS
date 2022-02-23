@@ -35,15 +35,15 @@
       <ion-icon name="list"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">All Items List</ion-label>
     </ion-item>
-    <ion-item lines="none">
+    <ion-item lines="none" [routerLink]="['/recent']">
       <ion-icon name="time"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">Recent</ion-label>
     </ion-item>
-    <ion-item lines="none">
+    <ion-item lines="none" [routerLink]="['/about']">
       <ion-icon name="information-circle-outline"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">About</ion-label>
     </ion-item>
-    <ion-item lines="none" [routerLink]="['/login']">
+    <ion-item lines="none" (click)="logout()">
       <ion-icon name="log-out"></ion-icon>
       <ion-label color="dark" class="ion-margin-start">Logout</ion-label>
     </ion-item>
@@ -51,6 +51,7 @@
 </ion-menu>
 
 <ion-content color="light" [fullscreen]="true">
+
   <div id="container">
     <ion-card *ngFor="let item of row_data; let i = index">
       <ion-card-header class="ion-no-padding">
@@ -73,7 +74,7 @@
                       <ion-label class="ion-padding-start">Edit</ion-label>
                       <ion-icon class="edit-icon ion-no-margin" name="create" slot="start"></ion-icon>
                     </ion-item>
-                    <ion-item lines="none" class="options" (click)="confirmAlert(item)">
+                    <ion-item lines="none" class="options" (click)="confirmAlert(item.id)">
                       <ion-label class="ion-padding-start">Delete</ion-label>
                       <ion-icon class="delete-icon ion-no-margin" name="trash" slot="start"></ion-icon>
                     </ion-item>
@@ -143,7 +144,7 @@
 
             <ion-item lines="none">
               <ion-label position="stacked" class="label">Item Name</ion-label>
-              <ion-input type="text" formControlName="itemName" value="{{ data.name }}"
+              <ion-input type="text" formControlName="itemName" value="{{ data.itemName }}"
                 class="ion-margin-top ion-no-padding"></ion-input>
             </ion-item>
 
@@ -169,7 +170,7 @@
             <ion-item lines="none">
               <ion-label position="stacked" class="label">Price</ion-label>
               <ion-input type="text" formControlName="price" value="{{ data.price }}"
-                class="ion-margin-vertical ion-no-padding" disabled></ion-input>
+                class="ion-margin-vertical ion-no-padding"></ion-input>
             </ion-item>
 
             <ion-item
@@ -197,8 +198,11 @@
       </ion-modal>
     </div>
   </div>
-
-  <div>
-    <ion-button expand="full" class="next-btn">Next</ion-button>
-  </div>
+  
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar [routerLink]="['/total']">
+    <ion-title class="ion-text-center">Next</ion-title>
+  </ion-toolbar>
+</ion-footer>

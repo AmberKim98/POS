@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button defaultHref="home" color="light" icon="chevron-back" slot="start"></ion-back-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div>
+    <ion-card>
+      <ion-card-content>
+        <ion-row>
+          <ion-col size="4">
+            <ion-label class="ion-no-margin"><small><b>Date</b></small></ion-label>
+          </ion-col>
+          <ion-col size="8">
+            <ion-text><small><b>{{ today | date: 'dd/MM/yy' }}</b></small></ion-text>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4">
+            <ion-label class="ion-no-margin"><small><b>Service No.</b></small></ion-label>
+          </ion-col>
+          <ion-col size="8">
+            <ion-text><small><b>ID-1</b></small></ion-text>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4">
+            <ion-label class="ion-no-margin"><small><b>Terminal</b></small></ion-label>
+          </ion-col>
+          <ion-col size="8">
+            <ion-text><small><b>SCM Terminal 1</b></small></ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="ion-margin-top">
+    <ion-item *ngFor="let item of cartItems; let i=index">
+      <ion-col size="1" class="ion-align-items-center">
+        <ion-text class="quantity"><b>{{ item.quantity }}</b></ion-text>
+      </ion-col>
+      <ion-col size="7"  class="ion-align-items-center">
+        <ion-text class="item-name"><b>{{ item.name }}</b></ion-text>
+      </ion-col>
+      <ion-col size="4" class="ion-align-items-center">
+        <ion-text class="price ion-float-right" color="medium"><b>MMK {{ item.price }}</b></ion-text>
+      </ion-col>
+      <ion-input value="{{ item.quantity*item.price }}"></ion-input>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-col size="8" class="ion-align-items-center">
+        <ion-label><b>Total</b></ion-label>
+      </ion-col>
+      <ion-col size="4"  class="ion-align-items-center">
+        <ion-text class="ion-float-right"><b>MMK {{ total }}</b></ion-text>
+      </ion-col>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-col size="8" class="ion-align-items-center">
+        <ion-label><b>Promotion</b></ion-label>
+      </ion-col>
+      <ion-col size="4"  class="ion-align-items-center">
+        <ion-text class="ion-float-right"><b>MMK {{ promotion }}</b></ion-text>
+      </ion-col>
+    </ion-item>
+    <ion-item lines="full">
+      <ion-col size="8" class="ion-align-items-center">
+        <ion-label><b>QST</b></ion-label>
+      </ion-col>
+      <ion-col size="4"  class="ion-align-items-center">
+        <ion-text class="ion-float-right"><b>MMK {{ qst }}</b></ion-text>
+      </ion-col>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-col size="8" class="ion-align-items-center">
+        <ion-label><b>Total <ion-text color="medium"><small>(including Tax)</small></ion-text></b></ion-label>
+      </ion-col>
+      <ion-col size="4"  class="ion-align-items-center">
+        <ion-text class="ion-float-right"><b>MMK {{ total + qst }}</b></ion-text>
+      </ion-col>
+    </ion-item>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar (click)="save()">
+    <ion-title class="ion-text-center">Save</ion-title>
+  </ion-toolbar>
+</ion-footer>
+

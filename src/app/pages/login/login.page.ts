@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, Platform } from '@ionic/angular';
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
 import { DatabaseService } from 'src/app/services/database/database.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
@@ -18,7 +18,8 @@ export class LoginPage implements OnInit {
     private platform: Platform,
     private formBuilder: FormBuilder,
     private alertController: AlertController,
-    private router: Router  
+    private router: Router,
+    private loadingController: LoadingController
   ) { 
     this.platform.ready().then(() => {
       this.dbService.select().then(res => {
@@ -38,7 +39,12 @@ export class LoginPage implements OnInit {
    * Login to homepage.
    * 
    */
-  onSubmit() {
+  async onSubmit() {
+    const loading = await this.loadingController.create({
+      spinner: 'bubbles',
+      message: 'Please wait...',
+      duration: 500
+    });
     let flag = false;
     for(var i=0; i<this.users.length; i++)
     {
@@ -50,8 +56,11 @@ export class LoginPage implements OnInit {
     }
     if(flag == true)
     {
-      this.successAlert();
-      this.router.navigate(['/home']);
+      loading.present();
+      loading.onDidDismiss().then(() => {
+        this.successAlert();
+        this.router.navigate(['/home']);
+      })
     }
     else this.failAlert().then(() => this.router.navigate(['']));
   }

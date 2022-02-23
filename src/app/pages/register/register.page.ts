@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Platform } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { Router } from "@angular/router";
 
@@ -15,12 +15,14 @@ export class RegisterPage implements OnInit {
   data: any;
   submitted = false;
   db_obj: SQLiteObject;
+  public userID:any = [];
 
   constructor(
     public formBuilder: FormBuilder,
     private sqlite: SQLite,
     private platform: Platform,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController
   ) { 
     this.data = {
       name: '',
@@ -64,7 +66,7 @@ export class RegisterPage implements OnInit {
    */
    createTable() {
     console.log('creating table....');
-    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS users(uid INTEGER PRIMARY KEY, name VARCHAR(255), email VARCHAR(255), password VARCHAR(255), gender VARCHAR(255), address VARCHAR(255))', [])
+    this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS loginUsers(uid INTEGER PRIMARY KEY, name VARCHAR(255), email VARCHAR(255) UNIQUE, password VARCHAR(255), gender VARCHAR(255), address VARCHAR(255))', [])
     .then(() => console.log('table was created!'))
     .catch(err => console.log(err));
   }
@@ -102,7 +104,7 @@ export class RegisterPage implements OnInit {
    * 
    */
   insertDB() {
-    this.db_obj.executeSql(`INSERT INTO users(name, email, password, gender, address) VALUES ('${this.data.name}', '${this.data.email}', '${this.data.password}', '${this.data.gender}', '${this.data.address}')`, [])
+    this.db_obj.executeSql(`INSERT INTO loginUsers(name, email, password, gender, address) VALUES ('${this.data.name}', '${this.data.email}', '${this.data.password}', '${this.data.gender}', '${this.data.address}')`, [])
     .then(() => {
       console.log('A user was created');
     });
@@ -127,8 +129,33 @@ export class RegisterPage implements OnInit {
       this.data.address = this.myForm.get('address').value;
       console.log(this.myForm.get('name').value);
       this.insertDB();
-      this.router.navigate(['/home']);
+      this.selectUserId(this.data.email);
       console.log('---form data---', this.myForm.value);
     }
+  }
+
+  registerConfirm(id) {
+    console.log('registered user id...', id);
+    this.alertController.create({
+      header: 'Register Information',
+      message: 'You can now login with ID-'+ id,
+      buttons: [
+        {
+          text: 'OK',
+          handler: () => this.router.navigate(['home'])
+        }
+      ]
+    })
+    .then(alert => {
+      alert.present();
+    })
+  }
+
+  selectUserId(email) {
+    this.db_obj.executeSql(`SELECT uid FROM loginUsers WHERE email= '${email}'`, [])
+    .then(res => {
+      let id = res.rows.item(0).uid;
+      this.registerConfirm(id);
+    })
   }
 }
