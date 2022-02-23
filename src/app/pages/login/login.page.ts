@@ -68,7 +68,13 @@ export class LoginPage implements OnInit {
         this.router.navigate(['/home']);
       })
     }
-    else this.failAlert().then(() => this.router.navigate(['']));
+    else {
+      loading.present();
+      loading.onDidDismiss().then(() => {
+        this.failAlert();
+        this.router.navigate(['']);
+      })
+    }
   }
 
   /**
