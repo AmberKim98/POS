@@ -22,10 +22,16 @@ export class LoginPage implements OnInit {
     private loadingController: LoadingController
   ) { 
     this.platform.ready().then(() => {
-      this.dbService.select().then(res => {
+      this.dbService.createUserTable().then(() => {
+        this.dbService.select().then(res => {
         this.users = res;
         console.log(this.users);
       })
+      });
+      // this.dbService.select().then(res => {
+      //   this.users = res;
+      //   console.log(this.users);
+      // })
     })
   } 
 

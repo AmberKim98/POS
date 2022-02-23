@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -14,11 +14,11 @@ export class DatabaseService implements OnInit{
 
   constructor(
     private sqlite: SQLite,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private platform: Platform
   ) {}
 
   ngOnInit() {
-    
   }
 
   /**
@@ -29,7 +29,7 @@ export class DatabaseService implements OnInit{
     return this.sqlite.create({
       name: 'login.db',
       location: 'default'
-    })
+    });
   }
 
   /**
@@ -50,18 +50,37 @@ export class DatabaseService implements OnInit{
   select() {
     return new Promise((resolve,reject) => {
       this.open().then((dbObj) => {
-        this.createUserTable();
         dbObj.executeSql('SELECT uid,email,password FROM loginUsers', [])
         .then((data) => {
           if(data.rows.length == 0) {
-            dbObj.executeSql(`INSERT INTO loginUsers(uid, name, email, password, gender, address) VALUES (1, 'tester', 'tester@gmail.com', '123456', 'male', 'ygn')`, []);
+            dbObj.executeSql(`INSERT INTO loginUsers(uid, name, email, password, gender, address) VALUES (1, 'tester', 'tester@gmail.com', '123456', 'male', 'ygn')`, [])
+            .then((res) => {
+              console.log(res.insertId);
+              dbObj.executeSql(`SELECT * FROM loginUsers WHERE uid = ${res.insertId}`, [])
+              .then(res => {
+                console.log('---info---', res.rows.item(0));
+                let user = {
+                  uid: res.rows.item(0).uid,
+                  name: res.rows.item(0).name,
+                  email: res.rows.item(0).email,
+                  password: res.rows.item(0).password,
+                  gender: res.rows.item(0).gender,
+                  address: res.rows.item(0).address
+                }
+                this.data.push(user);
+                console.log('A new user was inserted!', this.data);
+              })
+            })
+            .catch(err => {
+              console.log(err);
+            });
           }
           console.log(data.rows.length);
           for(var i=0; i<data.rows.length; i++)
           {
             this.data.push(data.rows.item(i));
           }
-          console.log(this.data);
+          console.log('---data---', this.data);
           resolve(this.data);
         })
       });
@@ -73,13 +92,13 @@ export class DatabaseService implements OnInit{
    * 
    */
   createUserTable() {
-    this.open().then((db: SQLiteObject) => {
+    return this.open().then((db: SQLiteObject) => {
       this.db_obj = db;
       this.db_obj.executeSql('CREATE TABLE IF NOT EXISTS loginUsers(uid INTEGER PRIMARY KEY, name VARCHAR(255), email VARCHAR(255) UNIQUE, password VARCHAR(255), gender VARCHAR(255), address VARCHAR(255))', [])
-      .then(() => {
+      .then((res) => {
         console.log('User table was created.');
       })
-    });
+    })
   }
 
   /**
